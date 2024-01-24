@@ -1,0 +1,21 @@
+.campaign-factory {
+    display: flex;
+}
+
+.box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background-color: #ffffff; /* Replace 'background.paper' with the actual color or use a variable if applicable */
+    border: 2px solid #000000;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.16); /* Assuming the shadow should be applied */
+    padding: 16px; /* Assuming 'p' is the padding value */
+}
+
+.request{
+    display: flex;
+    justify-content: space-between;
+}
