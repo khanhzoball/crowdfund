@@ -8,15 +8,17 @@ import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 
 const CampaignFactory = () => {
-    const {chainId: chainIdHex, isWeb3Enabled, account} = useMoralis();
+    const {chainId: chainIdHex, isWeb3Enabled, account} = useMoralis()
     const [campaignFactory, setCampaignFactory] = useState([]);
     const [newCampaignName, setNewCampaignName] = useState("");
     const [refresh, setRefresh] = useState(false);
 
-
-    const chainId = parseInt(chainIdHex);
+    // Determines the blockchain network
+    const chainId = parseInt(chainIdHex); 
+    // Address if the CampaignFactory smart contract for the network
     const contractAddress = chainId in contractAddresses ? contractAddresses[chainId][0]: null;
 
+    // Retreives campaigns and summaries by making a function call to the deployed contract
     const {runContractFunction: getAllCampaignSummary} = useWeb3Contract({
         abi: abi,
         contractAddress: contractAddress,
@@ -26,6 +28,7 @@ const CampaignFactory = () => {
         },
     })
 
+    // creates a new campaign
     const {runContractFunction: createCampaign} = useWeb3Contract({
         abi: abi,
         contractAddress: contractAddress,
@@ -35,6 +38,7 @@ const CampaignFactory = () => {
         },
     })
 
+    // on load, whenever refresh is called, or login/logout/network switch happens
     useEffect (() => {
         async function updateUI() {
             let campaigns = await getAllCampaignSummary();
@@ -46,34 +50,39 @@ const CampaignFactory = () => {
         }
     }, [isWeb3Enabled, refresh])
     
+
     const CAMPAIGN_MAPPER = ({ i_campaignName, campaignAddress, campaignBalance, fundersCount, i_owner, campaignIndex }) => {
-        const [fundAmount, setFundAmount] = useState(0);
-        const [funded, setFunded] = useState(false);
-        const [openFund, setOpenFund] = useState(false);
-        const [openRequests, setOpenRequests] = useState(false);
-        const [openCreateRequest, setOpenCreateRequest] = useState(false);
-        const [requestName, setRequestName] = useState("");
-        const [requestDescription, setRequestDescription] = useState("");
-        const [requestAmount, setRequestAmount] = useState(0);
-        const [requests, setRequests] = useState([]);
+        const [fundAmount, setFundAmount] = useState(0); // amount user wants to fund campaign
+        const [funded, setFunded] = useState(false); // is user a funder?
+        const [openFund, setOpenFund] = useState(false); // open fund modal 
+        const [openRequests, setOpenRequests] = useState(false); // open requests modal
+        const [openCreateRequest, setOpenCreateRequest] = useState(false); // open request creation modal
+        const [requestName, setRequestName] = useState(""); // name for new request
+        const [requestDescription, setRequestDescription] = useState(""); // description for new request
+        const [requestAmount, setRequestAmount] = useState(0); // amount of cryptocurrency to be requested
+        const [requests, setRequests] = useState([]); // array for request for the campaign
         const isOwner = account.toLowerCase() === i_owner.toLowerCase();
 
+        // onclick to close any modal
         const handleClose = () => {
             setOpenFund(false)
             setOpenRequests(false)
             setOpenCreateRequest(false)
         };
 
+        // onclick to open the funding modal
         const handleOpenFund = () => {
             console.log(account)
             setOpenFund(true)
         };
 
+        // onclick to open the request creation modal
         const handleOpenCreateRequest = () => {
             console.log(account)
             setOpenCreateRequest(true)
         };
 
+        // opens request modal and fetches the requests for the selected campaign
         const handleOpenRequests = () => {
             async function updateUI() {
                 try {
@@ -95,12 +104,11 @@ const CampaignFactory = () => {
                 }
             }
     
-    
             updateUI()
-    
             setOpenRequests(true)
         };
 
+        // checks if user is a funder for the campaign
         async function checkIfFunder() {
             let temp = await Moralis.executeFunction({
                 abi: abi,
